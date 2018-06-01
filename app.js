@@ -3,8 +3,14 @@ const app = express();
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const morgan =  require('morgan');
+const bodyParser =  require('body-parser');
 
+//Logger for console
 app.use(morgan('dev'))
+// Body Parser
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json())
+
 // For Products route
 app.use('/products', productRoutes);
 // For Orders route
