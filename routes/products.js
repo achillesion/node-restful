@@ -11,7 +11,14 @@ router.get('/',(req, res, next)=>{
    .exec()
    .then(doc=>{
        console.log(doc)
-       res.status(200).json(doc)
+       if(doc.length >= 0){
+        res.status(200).json(doc)
+       }else{
+           res.status(404).json({
+               message : 'No enteries found!'
+           })
+       }
+       
    })
    .catch(err =>{
        console.log(err)
@@ -70,15 +77,40 @@ router.get('/:productId',(req, res, next)=>{
 })
 // Patch Products by ID
 router.patch('/:productId',(req, res, next)=>{
-    res.status(200).json({
-        message: 'Product has been successfully updated!'
-    })
+    const id = req.params.productId;
+    const updateOps ={}
+    for(const ops of req.body){
+        updateOps[ops.propName] = ops.value;
+    }
+  Product.update({_id: id},{ $set: updateOps})
+  .exec()
+  .then(result =>{
+      console.log(result)
+      res.status(200).json(result)
+
+  })
+  .catch(err=>{
+      console.log(err)
+      res.status(500).json({
+          error: err
+      })
+  })
+
 })
 // DELETE Products by ID
 router.delete('/:productId',(req, res, next)=>{
-    res.status(200).json({
-        message: 'Product has been successfully deleted!'
-    })
+    const id = req.params.productId
+  Product.findOneAndRemove({ _id: id})
+  .exec()
+  .then(result=>{
+      res.status(200).json(result)
+  })
+  .catch(err => {
+      console.log(err)
+      res.status(500).json({
+          error : err
+      })
+  })
 })
 
 module.exports = router;
